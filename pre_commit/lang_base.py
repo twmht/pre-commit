@@ -41,6 +41,15 @@ class Language(Protocol):
     ) -> None:
         ...
 
+    # install a repository for the given language and language_version
+    def clone_environment(
+            self,
+            prefix: Prefix,
+            version: str,
+            additional_dependencies: Sequence[str],
+    ) -> None:
+        ...
+
     # modify the environment for hook execution
     def in_env(self, prefix: Prefix, version: str) -> ContextManager[None]: ...
 

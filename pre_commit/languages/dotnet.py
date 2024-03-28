@@ -52,6 +52,14 @@ def _nuget_config_no_sources() -> Generator[str, None, None]:
         yield nuget_config
 
 
+def clone_environment(
+        prefix: Prefix,
+        version: str,
+        additional_dependencies: Sequence[str],
+) -> None:
+    raise NotImplementedError
+
+
 def install_environment(
         prefix: Prefix,
         version: str,

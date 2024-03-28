@@ -112,6 +112,12 @@ def _install_ruby(
         lang_base.setup_cmd(prefix, ('rbenv', 'install', version))
 
 
+def clone_environment(
+        prefix: Prefix, version: str, additional_dependencies: Sequence[str],
+) -> None:
+    raise NotImplementedError
+
+
 def install_environment(
         prefix: Prefix, version: str, additional_dependencies: Sequence[str],
 ) -> None:

@@ -74,6 +74,12 @@ def health_check(prefix: Prefix, version: str) -> str | None:
             return None
 
 
+def clone_environment(
+        prefix: Prefix, version: str, additional_dependencies: Sequence[str],
+) -> None:
+    raise NotImplementedError
+
+
 def install_environment(
         prefix: Prefix, version: str, additional_dependencies: Sequence[str],
 ) -> None:

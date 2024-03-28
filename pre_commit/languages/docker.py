@@ -87,6 +87,12 @@ def build_docker_image(
     lang_base.setup_cmd(prefix, cmd)
 
 
+def clone_environment(
+        prefix: Prefix, version: str, additional_dependencies: Sequence[str],
+) -> None:  # pragma: win32 no cover
+    raise NotImplementedError
+
+
 def install_environment(
         prefix: Prefix, version: str, additional_dependencies: Sequence[str],
 ) -> None:  # pragma: win32 no cover

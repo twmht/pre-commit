@@ -30,6 +30,14 @@ def in_env(prefix: Prefix, version: str) -> Generator[None, None, None]:
         yield
 
 
+def clone_environment(
+    prefix: Prefix,
+    version: str,
+    additional_dependencies: Sequence[str],
+) -> None:
+    raise NotImplementedError
+
+
 def install_environment(
     prefix: Prefix,
     version: str,

@@ -33,6 +33,12 @@ def in_env(prefix: Prefix, version: str) -> Generator[None, None, None]:
         yield
 
 
+def clone_environment(
+        prefix: Prefix, version: str, additional_dependencies: Sequence[str],
+) -> None:  # pragma: win32 no cover
+    raise NotImplementedError
+
+
 def install_environment(
         prefix: Prefix, version: str, additional_dependencies: Sequence[str],
 ) -> None:  # pragma: win32 no cover

@@ -30,6 +30,8 @@ def clean_path_on_failure(path: str) -> Generator[None, None, None]:
     try:
         yield
     except BaseException:
+        if os.path.islink(path):
+            os.remove(path)
         if os.path.exists(path):
             rmtree(path)
         raise

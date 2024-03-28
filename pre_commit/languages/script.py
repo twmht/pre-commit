@@ -9,6 +9,7 @@ ENVIRONMENT_DIR = None
 get_default_version = lang_base.basic_get_default_version
 health_check = lang_base.basic_health_check
 install_environment = lang_base.no_install
+clone_environment = lang_base.no_install
 in_env = lang_base.no_env
 
 

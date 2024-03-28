@@ -110,6 +110,14 @@ def install_rust_with_toolchain(toolchain: str, envdir: str) -> None:
             )
 
 
+def clone_environment(
+        prefix: Prefix,
+        version: str,
+        additional_dependencies: Sequence[str],
+) -> None:
+    raise NotImplementedError
+
+
 def install_environment(
         prefix: Prefix,
         version: str,

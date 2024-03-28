@@ -456,6 +456,7 @@ def test_manifest_hooks(tempdir_factory, store):
         name='Bash hook',
         pass_filenames=True,
         require_serial=False,
+        require_venv=True,
         stages=[
             'commit-msg',
             'post-checkout',

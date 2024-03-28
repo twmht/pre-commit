@@ -103,6 +103,14 @@ def _cmd_from_hook(
     return (cmd[0], *RSCRIPT_OPTS, *cmd_part, *args)
 
 
+def clone_environment(
+        prefix: Prefix,
+        version: str,
+        additional_dependencies: Sequence[str],
+) -> None:
+    raise NotImplementedError
+
+
 def install_environment(
         prefix: Prefix,
         version: str,

@@ -91,18 +91,29 @@ def _hook_install(hook: Hook) -> None:
         rmtree(venv)
 
     with clean_path_on_failure(venv):
-        lang.install_environment(
-            hook.prefix, hook.language_version, hook.additional_dependencies,
-        )
-        health_error = lang.health_check(hook.prefix, hook.language_version)
-        if health_error:
-            raise AssertionError(
-                f'BUG: expected environment for {hook.language} to be healthy '
-                f'immediately after install, please open an issue describing '
-                f'your environment\n\n'
-                f'more info:\n\n{health_error}',
+        if hook.require_venv:
+            lang.install_environment(
+                hook.prefix, hook.language_version,
+                hook.additional_dependencies,
             )
-
+            health_error = lang.health_check(
+                hook.prefix,
+                hook.language_version,
+            )
+            if health_error:
+                raise AssertionError(
+                    f'BUG: expected environment '
+                    f'for {hook.language} to be healthy '
+                    f'immediately after install, please '
+                    f'open an issue describing '
+                    f'your environment\n\n'
+                    f'more info:\n\n{health_error}',
+                )
+        else:
+            lang.clone_environment(
+                hook.prefix, hook.language_version,
+                hook.additional_dependencies,
+            )
         # TODO: remove v1 state writing, no longer needed after pre-commit 3.0
         # Write our state to indicate we're installed
         state_filename = _state_filename_v1(venv)
@@ -225,6 +236,7 @@ def install_hook_envs(hooks: Sequence[Hook], store: Store) -> None:
         seen: set[tuple[Prefix, str, str, tuple[str, ...]]] = set()
         ret = []
         for hook in hooks:
+            # print(f'hook={hook.src}, install_key={hook.install_key}')
             if hook.install_key not in seen and not _hook_installed(hook):
                 ret.append(hook)
             seen.add(hook.install_key)

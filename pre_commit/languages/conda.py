@@ -56,6 +56,14 @@ def _conda_exe() -> str:
         return 'conda'
 
 
+def clone_environment(
+        prefix: Prefix,
+        version: str,
+        additional_dependencies: Sequence[str],
+) -> None:
+    raise NotImplementedError
+
+
 def install_environment(
         prefix: Prefix,
         version: str,

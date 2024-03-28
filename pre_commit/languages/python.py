@@ -18,6 +18,7 @@ from pre_commit.prefix import Prefix
 from pre_commit.util import CalledProcessError
 from pre_commit.util import cmd_output
 from pre_commit.util import cmd_output_b
+from pre_commit.util import rmtree
 from pre_commit.util import win_exe
 
 ENVIRONMENT_DIR = 'py_env'
@@ -195,6 +196,30 @@ def health_check(prefix: Prefix, version: str) -> str | None:
         )
     else:
         return None
+
+
+def clone_environment(
+        prefix: Prefix,
+        version: str,
+        additional_dependencies: Sequence[str],
+) -> None:
+    envdir = lang_base.environment_dir(prefix, ENVIRONMENT_DIR, version)
+    # Path to the Python executable inside the virtual environment
+    python_executable = sys.executable
+
+    # Get the directory containing the Python executable
+    executable_dir = os.path.dirname(python_executable)
+    venv_dir = os.path.dirname(executable_dir)
+    # Remove existing directory or link if necessary
+    if os.path.islink(envdir):
+        os.remove(envdir)
+    if os.path.exists(envdir):
+        rmtree(envdir)
+    # Create a symbolic link pointing venv_dir to envdir
+    os.symlink(venv_dir, envdir)
+    install_cmd = ('python', '-mpip', 'install', '.', *additional_dependencies)
+    with in_env(prefix, version):
+        lang_base.setup_cmd(prefix, install_cmd)
 
 
 def install_environment(
