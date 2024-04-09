@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import functools
+import logging
 import os
 import sys
 from collections.abc import Generator
@@ -22,6 +23,8 @@ from pre_commit.util import win_exe
 
 ENVIRONMENT_DIR = 'py_env'
 run_hook = lang_base.basic_run_hook
+
+logger = logging.getLogger('pre_commit')
 
 
 @functools.cache
@@ -203,12 +206,42 @@ def install_environment(
         additional_dependencies: Sequence[str],
 ) -> None:
     envdir = lang_base.environment_dir(prefix, ENVIRONMENT_DIR, version)
-    venv_cmd = [sys.executable, '-mvirtualenv', envdir]
+    # Path to the Python executable inside the virtual environment
+    python_executable = sys.executable
+    # Get the directory containing the Python executable
+    executable_dir = os.path.dirname(python_executable)
+    venv_dir = os.path.dirname(executable_dir)
+    clone = False
+    if '--clone-venv' in additional_dependencies:
+        logger.info('Cloning virtualenv from %s to %s', venv_dir, envdir)
+        venv_cmd = ['virtualenv-clone', venv_dir, envdir]
+        additional_dependencies = [
+            dep for dep in additional_dependencies if dep != '--clone-venv'
+        ]
+        clone = True
+    else:
+        venv_cmd = [sys.executable, '-mvirtualenv', envdir]
+
     python = norm_version(version)
     if python is not None:
         venv_cmd.extend(('-p', python))
     install_cmd = ('python', '-mpip', 'install', '.', *additional_dependencies)
 
     cmd_output_b(*venv_cmd, cwd='/')
+    if clone:
+        envdir = lang_base.environment_dir(prefix, ENVIRONMENT_DIR, version)
+        pyvenv_cfg = os.path.join(envdir, 'pyvenv.cfg')
+        # created with "old" virtualenv
+        exe_name = win_exe('python')
+        py_exe = prefix.path(bin_dir(envdir), exe_name)
+        cfg = _read_pyvenv_cfg(pyvenv_cfg)
+        virtualenv_version = _version_info.__wrapped__(py_exe)
+        if 'version_info' not in cfg:
+            with open(pyvenv_cfg, 'a') as f:
+                f.write(f'version_info = {virtualenv_version}\n')
+        if 'base-executable' not in cfg:
+            with open(pyvenv_cfg, 'a') as f:
+                f.write(f'base-executable = {py_exe}\n')
+
     with in_env(prefix, version):
         lang_base.setup_cmd(prefix, install_cmd)
